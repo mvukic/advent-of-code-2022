@@ -1,7 +1,6 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm") version "1.8.0-Beta"
     application
 }
 
@@ -30,7 +29,7 @@ java {
 tasks {
     compileKotlin {
         kotlinOptions {
-            jvmTarget = "18"
+            jvmTarget = "19"
         }
     }
     wrapper {
