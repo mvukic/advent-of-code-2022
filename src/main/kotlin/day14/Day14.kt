@@ -16,37 +16,37 @@ data class Line(val points: List<Point>)
 
 typealias Canvas = Array<Array<String>>
 
-fun part1() {
-    var lines = getLines()
-    val minX = lines.minOf { line -> line.points.minOf { it.x } }
-    val maxX = lines.maxOf { line -> line.points.maxOf { it.x } }
-    val maxY = lines.maxOf { line -> line.points.maxOf { it.y } }
-    println("Min X: $minX, Max X: $maxX, Max Y: $maxY")
-    lines = normalizePoints(lines, minX)
-
-    val canvas: Canvas = Array(maxY + 1) {
-        Array(maxX - minX + 1) { "." }
-    }
-
-    drawLines(canvas, lines)
-    printCanvas(canvas)
-
-    var sandCount = 1
-    while (true) {
-        try {
-            val sandPoint = Point(500 - minX, 0)
-            val nextAvailablePoint = getNextAvailablePoint(canvas, sandPoint)
-            drawPoint(canvas, nextAvailablePoint)
-            printCanvas(canvas)
-            println()
-            sandCount++
-        } catch (e: Exception) {
-            println("Sand count: ${sandCount - 1}")
-            break
-        }
-    }
-
-}
+//fun part1() {
+//    var lines = getLines()
+//    val minX = lines.minOf { line -> line.points.minOf { it.x } }
+//    val maxX = lines.maxOf { line -> line.points.maxOf { it.x } }
+//    val maxY = lines.maxOf { line -> line.points.maxOf { it.y } }
+//    println("Min X: $minX, Max X: $maxX, Max Y: $maxY")
+//    lines = normalizePoints(lines, minX)
+//
+//    val canvas: Canvas = Array(maxY + 1) {
+//        Array(maxX - minX + 1) { "." }
+//    }
+//
+//    drawLines(canvas, lines)
+//    printCanvas(canvas)
+//
+//    var sandCount = 1
+//    while (true) {
+//        try {
+//            val sandPoint = Point(500 - minX, 0)
+//            val nextAvailablePoint = getNextAvailablePoint(canvas, sandPoint)
+//            drawPoint(canvas, nextAvailablePoint)
+//            printCanvas(canvas)
+//            println()
+//            sandCount++
+//        } catch (e: Exception) {
+//            println("Sand count: ${sandCount - 1}")
+//            break
+//        }
+//    }
+//
+//}
 
 fun getNextAvailablePoint(canvas: Canvas, point: Point): Point {
 //    println(point)
@@ -84,18 +84,50 @@ fun getLowestPoint(canvas: Canvas, point: Point): Point {
 }
 
 fun canOccupy(canvas: Array<Array<String>>, point: Point): Boolean {
-    if (point.y >= canvas.size) {
-        error("Out of rang on y")
-    }
-    if (point.x < 0 || point.x >= canvas.first().size) {
-        error("Out of rang on x")
+    if (point.y >= canvas.size + 2) {
+        return false
     }
     return canvas[point.y][point.x] == "."
 }
 
 
 fun part2() {
-    val lines = getLines()
+    var lines = getLines()
+    val minX = lines.minOf { line -> line.points.minOf { it.x } }
+    val maxX = lines.maxOf { line -> line.points.maxOf { it.x } }
+    val maxY = lines.maxOf { line -> line.points.maxOf { it.y } }
+    println("Min X: $minX, Max X: $maxX, Max Y: $maxY")
+    lines = normalizePoints(lines, minX, maxY, maxX)
+
+    val canvas: Canvas = Array(maxY + 3) {
+        Array(3*maxY + 1) { "." }
+    }
+
+    drawLines(canvas, lines)
+    drawLines(canvas, listOf(Line(getPointsBetween(
+        Point(0, canvas.size - 1),
+        Point(canvas.first().size - 1, canvas.size - 1)
+    ))))
+    printCanvas(canvas)
+
+    var sandCount = 1
+    while (true) {
+        try {
+            val sandPoint = Point(500 - minX + (3*maxY - maxX + minX - 1)/2, 0)
+            if (canvas[sandPoint.y][sandPoint.x] == "o") {
+                println("Sand count: ${sandCount - 1}")
+                error("")
+            }
+            val nextAvailablePoint = getNextAvailablePoint(canvas, sandPoint)
+            drawPoint(canvas, nextAvailablePoint)
+//            printCanvas(canvas)
+//            println()
+            sandCount++
+        } catch (e: Exception) {
+            println("Sand count: ${sandCount - 1}")
+            break
+        }
+    }
 }
 
 fun drawLines(canvas: Canvas, lines: List<Line>) {
@@ -129,8 +161,8 @@ fun drawPoint(canvas: Canvas, point: Point) {
     canvas[point.y][point.x] = "o"
 }
 
-fun normalizePoints(lines: List<Line>, minX: Int): List<Line> {
-    return lines.map { line -> Line(line.points.map { it.copy(x = it.x - minX) }) }
+fun normalizePoints(lines: List<Line>, minX: Int, maxY: Int, maxX: Int): List<Line> {
+    return lines.map { line -> Line(line.points.map { it.copy(x = it.x - minX + (3*maxY - maxX + minX - 1)/2) }) }
 }
 
 fun printCanvas(canvas: Canvas) {
@@ -147,7 +179,7 @@ fun getLines(): List<Line> {
 }
 
 fun main() {
-    part1()
+//    part1()
     part2()
 }
 
